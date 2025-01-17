@@ -6,17 +6,14 @@ from SyncProcess.sync_process_with_queries import sync_process_with_queries
 K = 10
 N = 100
 L = 5
-
 plot_results = False
 eve_attacks = False
-
 use_binary_inputs = False
 
 # для обычного ДМЧ
 upd_rule = UpdateRules.Hebbian
-
 # для запросов
-use_queries = False
+use_queries = True
 H = 3
 
 if use_queries:
@@ -42,14 +39,6 @@ if eve_attacks:
     else:
         print(f"Машина Евы синхронизирована на {eve_result['eve_score']}% по отношению к Алисе и Бобу, она совершила {eve_result['nb_eve_updates']} обновлений весов")
         plt.plot(eve_result['eve_sync_history'], c='red')
-
-# print("\nСгенерированный ключ")
-# print(sync_weights["alice"])
-
-if eve_attacks:
-    # print("\nСгенерированный ключ Евы")
-    # print(sync_weights["eve"])
-    pass
 
 if plot_results:
     plt.show()
