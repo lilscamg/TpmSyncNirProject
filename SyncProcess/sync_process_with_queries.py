@@ -1,11 +1,10 @@
 import time
 import numpy as np
-
 from TPM.tree_parity_machine import TreeParityMachine
-from Utils.utils import sync_score, generate_binary_query
+from Utils.utils import sync_score, generate_bin_query, generate_nonbin_query
 
 
-def sync_process_with_queries(K, N, L, H, update_rule, eve_attacks=True, use_binary_inputs=False):
+def sync_process_with_queries(K, N, L, H, update_rule, eve_attacks=True, use_binary_inputs=True):
     Alice = TreeParityMachine(K=K, N=N, L=L)
     Bob = TreeParityMachine(K=K, N=N, L=L)
     score = 0  # оценка синхронизации у Alice и Bob
@@ -28,9 +27,9 @@ def sync_process_with_queries(K, N, L, H, update_rule, eve_attacks=True, use_bin
     start_time = time.time()
     while not sync:
         if t % 2 == 0:
-            query = generate_binary_query(weights=Alice.W, H=H, K=K, N=N, L=L)
+            query = generate_bin_query(weights=Alice.W, H=H, K=K, N=N, L=L) if use_binary_inputs else generate_nonbin_query(weights=Alice.W, H=H, K=K, N=N, L=L)
         else:
-            query = generate_binary_query(weights=Bob.W, H=H, K=K, N=N, L=L)
+            query = generate_bin_query(weights=Bob.W, H=H, K=K, N=N, L=L) if use_binary_inputs else generate_nonbin_query(weights=Bob.W, H=H, K=K, N=N, L=L)
         t += 1
 
         sigma_A, tau_A = Alice.calc_tau(query)
