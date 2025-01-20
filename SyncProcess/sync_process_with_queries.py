@@ -76,7 +76,7 @@ def sync_process_with_queries(K, N, L, H, eve_attacks=True, use_binary_inputs=Tr
 
         if score >= 100:
             sync = True
-            print('Синхронизация завершена')
+            print('Синхронизация завершена\n')
 
     end_time = time.time()
     time_taken = end_time - start_time
