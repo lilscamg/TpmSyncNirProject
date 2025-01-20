@@ -4,7 +4,10 @@ from TPM.tree_parity_machine import TreeParityMachine
 from Utils.utils import random_binary_input, sync_score, random_input
 
 
-def sync_process(K, N, L, update_rule, eve_attacks=True, use_binary_inputs=True):
+def sync_process(K, N, L, update_rule, eve_attacks=True, use_binary_inputs=True, M=None):
+    if use_binary_inputs is False and M is None:
+        raise Exception('Binary inputs mode is chosen, but M value is None')
+
     Alice = TreeParityMachine(K=K, N=N, L=L)
     Bob = TreeParityMachine(K=K, N=N, L=L)
     score = 0  # оценка синхронизации у Alice и Bob
@@ -25,7 +28,7 @@ def sync_process(K, N, L, update_rule, eve_attacks=True, use_binary_inputs=True)
     sync = False  # флаг синхронизации
     start_time = time.time()
     while not sync:
-        X = random_binary_input(K=K, N=N) if use_binary_inputs else random_input(K=K, N=N, L=L)
+        X = random_binary_input(K=K, N=N) if use_binary_inputs else random_input(K=K, N=N, M=M)
 
         _, tauA = Alice.calc_tau(X)
         _, tauB = Bob.calc_tau(X)

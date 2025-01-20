@@ -7,43 +7,11 @@ def random_binary_input(K, N):
     return np.random.choice([-1, 1], size=[K, N])
 
 
-# Генерация входного вектора из [-L, L] размерности [K, N]
-def random_input(K, N, L):
-    return np.random.randint(-L, L + 1, size=[K, N])
-
-
-# Переопределенная функция sgn для массивов
-def sgn(x):
-    result = np.sign(x)
-    return np.where(result == 0, 1, result)
-
-
-# Переопределенная функция sgn для числа
-def sgn_value(x):
-    return 1 if x >= 0 else -1
-
-
-# Функция оценки синхронизации весов двух ДМЧ
-def sync_score(m1, m2, L):
-    return 1.0 - np.average(1.0 * np.abs(m1.W - m2.W) / (2 * L))
-
-
-# Расчет количества вхождений l в массив weights
-def calc_n(weights, l):
-    return (np.abs(weights) == l).sum()
-
-
-# Получение параметров ДМЧ (use_queries, use_binary_inputs)
-def get_tpm_params(tpm_type):
-    if tpm_type is TpmType.DefaultBinary:
-        return False, True
-    elif tpm_type is TpmType.DefaultNonBinary:
-        return False, False
-    elif tpm_type is TpmType.QueriesBinary:
-        return True, True
-    elif tpm_type is TpmType.QueriesNonBinary:
-        return True, False
-
+# Генерация целочисленного входного вектора из [-M, M] / {0} размерности [K, N]
+def random_input(K, N, M):
+    # return np.random.randint(-M, M + 1, size=[K, N])
+    available_values = np.concatenate((np.arange(-M, 0, step=1), np.arange(1, M + 1, step=1)))
+    return np.random.choice(available_values, size=(K, N))
 
 # Генерация бинарного запроса размерности (K, N) на основе весов
 def generate_bin_query(weights, H, K, N, L):
@@ -82,7 +50,7 @@ def generate_bin_query(weights, H, K, N, L):
 
 
 # Генерация небинарного запроса размерности (K, N) на основе весов
-def generate_nonbin_query(weights, H, K, N, L):
+def generate_nonbin_query(weights, H, K, N, L, M):
     query = generate_bin_query(weights, H, K, N, L)
 
     # Преобразуем матрицу в одномерный массив
@@ -91,5 +59,41 @@ def generate_nonbin_query(weights, H, K, N, L):
     binary_representation = (flattened_matrix + 1) // 2  # -1 -> 0, 1 -> 1
     # Преобразуем битовое представление в целое число
     number = int(''.join(map(str, binary_representation)), 2) % (2**32 - 1)
+
     np.random.seed(number)
-    return np.random.randint(-L, L + 1, size=(K, N))
+    # return np.random.randint(-M, M + 1, size=(K, N))
+    available_values = np.concatenate((np.arange(-M, 0, step=1), np.arange(1, M + 1, step=1)))
+    return np.random.choice(available_values, size=(K, N))
+
+
+# Переопределенная функция sgn для массивов
+def sgn(x):
+    result = np.sign(x)
+    return np.where(result == 0, 1, result)
+
+
+# Переопределенная функция sgn для числа
+def sgn_value(x):
+    return 1 if x >= 0 else -1
+
+
+# Функция оценки синхронизации весов двух ДМЧ
+def sync_score(m1, m2, L):
+    return 1.0 - np.average(1.0 * np.abs(m1.W - m2.W) / (2 * L))
+
+
+# Расчет количества вхождений l в массив weights
+def calc_n(weights, l):
+    return (np.abs(weights) == l).sum()
+
+
+# Получение параметров ДМЧ (use_queries, use_binary_inputs)
+def get_tpm_params(tpm_type):
+    if tpm_type is TpmType.DefaultBinary:
+        return False, True
+    elif tpm_type is TpmType.DefaultNonBinary:
+        return False, False
+    elif tpm_type is TpmType.QueriesBinary:
+        return True, True
+    elif tpm_type is TpmType.QueriesNonBinary:
+        return True, False
