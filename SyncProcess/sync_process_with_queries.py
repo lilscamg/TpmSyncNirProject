@@ -4,7 +4,7 @@ from TPM.tree_parity_machine import TreeParityMachine
 from Utils.utils import sync_score, generate_bin_query, generate_nonbin_query
 
 
-def sync_process_with_queries(K, N, L, H, eve_attacks=True, use_binary_inputs=True, M=None):
+def sync_process_with_queries(K, N, L, H, eve_attacks=True, use_binary_inputs=True, M=None, logs=False):
     if use_binary_inputs is False and M is None:
         raise Exception('Binary inputs mode is chosen, but M value is None')
 
@@ -72,7 +72,8 @@ def sync_process_with_queries(K, N, L, H, eve_attacks=True, use_binary_inputs=Tr
             if eve_score >= 100:
                 break
 
-        print(f"Синхронизация = {int(score)}%, Итераций = {nb_updates}", f" Итераций с обновлениями у Евы = {nb_eve_updates}" if eve_attacks else "")
+        if logs:
+            print(f"Синхронизация = {int(score)}%, Итераций = {nb_updates}", f" Итераций с обновлениями у Евы = {nb_eve_updates}" if eve_attacks else "")
 
         if score >= 100:
             sync = True

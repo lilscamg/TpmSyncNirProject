@@ -7,7 +7,28 @@ from UpdateRules.update_rules import UpdateRules
 from Utils.utils import get_tpm_params
 
 
-def start(tpm_type, K, N, L, eve_attacks=False, plot_results=False, H=None, M=None, upd_rule=None):
+def start(tpm_type, K, N, L, eve_attacks=False, logs=False, H=None, M=None, upd_rule=None):
+    use_queries, use_binary_inputs = get_tpm_params(tpm_type)
+
+    if not use_queries and upd_rule is None:
+        raise Exception('Default mode is chosen, but upd_rule value is None')
+    if use_queries and H is None:
+        raise Exception('Queries inputs mode is chosen, but H value is None')
+    if use_binary_inputs is False and M is None:
+        raise Exception('Binary inputs mode is chosen, but M value is None')
+
+    if use_queries:
+        return sync_process_with_queries(K, N, L, H, eve_attacks=eve_attacks,
+                                         use_binary_inputs=use_binary_inputs,
+                                         M=M,
+                                         logs=logs)
+    else:
+        return sync_process(K, N, L, upd_rule, eve_attacks=eve_attacks,
+                            use_binary_inputs=use_binary_inputs, M=M, logs=logs)
+
+
+def start_and_show_results(tpm_type, K, N, L, eve_attacks=False, plot_results=False, logs=False, H=None, M=None,
+                           upd_rule=None):
     use_queries, use_binary_inputs = get_tpm_params(tpm_type)
 
     if not use_queries and upd_rule is None:
@@ -20,10 +41,10 @@ def start(tpm_type, K, N, L, eve_attacks=False, plot_results=False, H=None, M=No
     if use_queries:
         result, eve_result, sync_weights, time_taken = sync_process_with_queries(K, N, L, H, eve_attacks=eve_attacks,
                                                                                  use_binary_inputs=use_binary_inputs,
-                                                                                 M=M)
+                                                                                 M=M, logs=logs)
     else:
         result, eve_result, sync_weights, time_taken = sync_process(K, N, L, upd_rule, eve_attacks=eve_attacks,
-                                                                    use_binary_inputs=use_binary_inputs, M=M)
+                                                                    use_binary_inputs=use_binary_inputs, M=M, logs=logs)
 
     print(f"{TpmType(tpm_type).name}")
     print(f"Параметры ДМЧ: K = {K}, N = {N}, L = {L}")
